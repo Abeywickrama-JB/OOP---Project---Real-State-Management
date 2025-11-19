@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Search Properties - ReProperty</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body class="bg-light">
+<div class="container mt-4">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="search-property.html">ReProperty</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="add-property.html">Add Property</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="search-property.html">Search Properties</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <h1 class="mb-4">Search Properties</h1>
+    <form id="searchForm" class="row g-3">
+        <div class="col-md-4">
+            <input type="text" id="location" placeholder="Location" class="form-control" />
+        </div>
+        <div class="col-md-4">
+            <select id="type" class="form-select">
+                <option value="">All Types</option>
+                <option>Residential</option>
+                <option>Commercial</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <input type="number" id="maxPrice" placeholder="Max Price" min="0" class="form-control" />
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+    <hr />
+    <div id="results" class="list-group"></div>
+</div>
+
+<script>
+    document.getElementById("searchForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const location = document.getElementById("location").value.trim();
+        const type = document.getElementById("type").value;
+        const maxPrice = document.getElementById("maxPrice").value;
+
+        let url = `http://localhost:8080/properties/search?`;
+        if (location) url += `location=${encodeURIComponent(location)}&`;
+        if (type) url += `type=${encodeURIComponent(type)}&`;
+        if (maxPrice) url += `maxPrice=${encodeURIComponent(maxPrice)}&`;
+
+        fetch(url)
+            .then((resp) => resp.json())
+            .then((data) => {
+                const resultsDiv = document.getElementById("results");
+                resultsDiv.innerHTML = "";
+                if (data.length === 0) {
+                    resultsDiv.innerHTML = '<p class="text-muted">No properties found.</p>';
+                    return;
+                }
+                data.forEach((p) => {
+                    const a = document.createElement("a");
+                    a.href = `property-detail.html?id=${p.id}`;
+                    a.className = "list-group-item list-group-item-action";
+                    a.innerHTML = `<strong>${p.type}:</strong> ${p.location} - $${p.price.toFixed(
+                        2
+                    )}`;
+                    resultsDiv.appendChild(a);
+                });
+            })
+            .catch((err) => {
+                document.getElementById("results").innerText = "Error fetching properties.";
+                console.error(err);
+            });
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

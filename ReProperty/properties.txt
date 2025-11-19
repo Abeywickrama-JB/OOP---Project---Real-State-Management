@@ -1,0 +1,2 @@
+30e5fe14-2c23-4221-b11c-9cff16a4c993,Gampaha,250000.0,Residential,true
+e547ccfd-5877-4f7d-8c25-84bb310fcdf6,Colombo,250000.0,Commercial,true
